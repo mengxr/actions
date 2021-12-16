@@ -1,0 +1,23 @@
+name: 'Push a branch to Databricks Repos'
+description: 'Push a branch to Databricks Repos. If the repo doesn't exist, create it first.'
+inputs:
+  host:
+    required: true
+  token:
+    required: true
+  path:
+    required: true
+  outputs:
+  runs:
+    using: 'composite'
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2  # Is it isolated?
+        with:
+          python-version: 3.8
+      - run: |
+          python -m pip install --upgrade pip wheel
+          python -m pip install -r requirements.txt
+      - run: |
+          python push_repo.py --url "https://github.com/$GITHUB_REPOSITORY" --branch "$GITHUB_REF" \
+            --host ${{inputs.host}} --token ${{inputs.token}} --path ${{inputs.path}}
